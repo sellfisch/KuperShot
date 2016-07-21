@@ -1,8 +1,6 @@
 package net.mobfish.sellfisch.kupershot;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -49,36 +48,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    Bitmap photo;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                selectedImage = data.getData();
-                photo = (Bitmap) data.getExtras().get("data");
-
-                // Cursor to get image uri to display
-
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                picturePath = cursor.getString(columnIndex);
-                cursor.close();
-
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                ImageView imageView = (ImageView) findViewById(R.id.Imageprev);
-                imageView.setImageBitmap(photo);
-
-                Bitmap bm = BitmapFactory.decodeFile(picturePath);
-                ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 90, bao);
-                byte[] ba = bao.toByteArray();
-                ba1 = Base64.encodeBytes(ba);
+                // Image captured and saved to fileUri specified in the Intent
+                Toast.makeText(this, "Image saved to:\n" +
+                        data.getData(), Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
