@@ -57,7 +57,7 @@ public class ImageUploadService {
                     }
                 })
                 .setTimeout(5 * 60 * 1000)
-                .setHeader("Host", "https://live.mob.fish")
+                .setHeader("Host", "live.mob.fish")
                 .setHeader("Content-Length", String.valueOf(file.length()))
                 .setHeader("Connection", "keep-alive")
                 .setMultipartContentType("multipart/form-data;")
