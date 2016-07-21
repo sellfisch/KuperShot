@@ -1,6 +1,7 @@
 package net.mobfish.sellfisch.kupershot;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,15 +56,46 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
+
+                Uri selectedImage = data.getData();
+
+                String filePath = getPath(selectedImage);
+                String file_extn = filePath.substring(filePath.lastIndexOf(".")+1);
+                //image_name_tv.setText(filePath);
+
+                try {
+                    if (file_extn.equals("img") || file_extn.equals("jpg") || file_extn.equals("jpeg") || file_extn.equals("gif") || file_extn.equals("png")) {
+                       // HttpClient httpclient = new DefaultHttpClient();
+                       // HttpPost httppost = new HttpPost("http://live.mob.fish/incomingUpload.php");
+                    }
+                    else{
+                        //NOT IN REQUIRED FORMAT
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
                 // Image capture failed, advise user
             }
         }
+    }
+private int column_index;
+    private String imagePath;
+
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.MediaColumns.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        imagePath = cursor.getString(column_index);
+
+        return cursor.getString(column_index);
     }
 
     @Override
