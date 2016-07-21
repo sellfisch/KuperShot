@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onImageUploadProgressEvent(OnUploadProgressEvent event) {
+        Log.i(TAG, "Progress call");
         if (event.isInProgress()) {
             updateProgress(event.getProgressPercentage(), null);
         } else if (event.hasError()) {
@@ -150,7 +151,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onImageUploadCompleted(OnUploadCompletedEvent event) {
+        Log.i(TAG, "Completed call");
         updateProgress(100, null);
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+
+        Toast.makeText(this, R.string.image_uploaded, Toast.LENGTH_SHORT).show();
     }
 
     private void updateProgress(int percentage, String message) {

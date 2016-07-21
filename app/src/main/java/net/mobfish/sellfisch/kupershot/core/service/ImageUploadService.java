@@ -74,7 +74,8 @@ public class ImageUploadService {
                             bus.post(new OnUploadProgressEvent(new Exception(e.getMessage()), false, false, 100, 100));
                         } else if (!TextUtils.isEmpty(result)) {
                             Log.i("ImageUploadService", "Unknown Exception " + context.getString(R.string.error_occurred) + ", RESULT: " + result);
-                            bus.post(new OnUploadProgressEvent(new Exception(context.getString(R.string.error_occurred)), false, false, 100, 100));
+                            bus.post(new OnUploadCompletedEvent(null, false, false));
+                            //.post(new OnUploadProgressEvent(new Exception(context.getString(R.string.error_occurred)), false, false, 100, 100));
                         }
                     }
                 });
