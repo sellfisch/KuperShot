@@ -6,6 +6,7 @@
     <string name="uploading">uploading</string>
     <string name="permission_explanation">Permission explanation</string>
     <string name="capture_image_permission_explanation">We need to access your camera in order to capture image</string>
+    <string name="storage_permission_explanation">We need to save captured image in order to upload it.</string>
     <string name="ok_continue">Ok, continue</string>
     <string name="deny_for_now">Deny for now</string>
     <string name="permission_denied">Permission denied</string>

@@ -1,5 +1,7 @@
 package net.mobfish.sellfisch.kupershot.core.job;
 
+import android.util.Log;
+
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.Params;
@@ -36,6 +38,7 @@ public class ImageUploadJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
+        Log.i("ImageUploadJob", "running");
         mediaUploadService.uploadImage(imageFilePath);
     }
 

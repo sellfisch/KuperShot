@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
     private final int REQUEST_IMAGE_CAPTURE = 1212;
+    private final String TAG = "MAIN";
 
     @Inject
     Bus bus;
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @NeedsPermission(Manifest.permission.CAMERA)
+    @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void captureImage() {
         Toast.makeText(MainActivity.this, "Capture", Toast.LENGTH_SHORT).show();
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -106,23 +108,26 @@ public class MainActivity extends AppCompatActivity {
     private void loadImage(Object cameraImage) {
 
         try {
+            Log.i(TAG, "loadImage: Object type -> " + cameraImage.getClass().getName());
             imagePath = compressImage((Bitmap) cameraImage);
             jobManager.addJob(new ImageUploadJob(imagePath));
         } catch (Exception ex) {
-
+            Log.i(TAG, "loadImage exception" + ex.getMessage());
         }
     }
 
     public String compressImage(Bitmap bitmap) {
         try {
+            Log.i(TAG, "compressing");
             File frazzleDirectory = new File(Environment.getExternalStorageDirectory() + "/mobfish/kupershot/");
-            if (frazzleDirectory.exists()) {
+            if (!frazzleDirectory.exists()) {
                 frazzleDirectory.mkdirs();
             }
             File compressedImage = new File(Environment.getExternalStorageDirectory() + "/mobfish/kupershot/kupershot_image.jpg");
             if (compressedImage.exists()) {
                 compressedImage.delete();
             }
+            Log.i(TAG, "compressing, file path -> " + compressedImage.getAbsolutePath());
             compressedImage.createNewFile();
             FileOutputStream compressedOutputStream = new FileOutputStream(compressedImage);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, compressedOutputStream);
@@ -130,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
             compressedOutputStream.close();
             return compressedImage.getAbsolutePath();
         } catch (Exception ex) {
+            Log.i(TAG, "compress exception" + ex.getMessage());
+            ex.printStackTrace();
             return null;
         }
     }
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    @OnShowRationale(Manifest.permission.CAMERA)
+    @OnShowRationale({Manifest.permission.CAMERA})
     public void onCameraShowRationale(final PermissionRequest permissionRequest) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.permission_explanation);
@@ -190,7 +197,27 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    @OnPermissionDenied({Manifest.permission.CAMERA, Manifest.permission.CAMERA})
+    @OnShowRationale({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void onStorageShowRationale(final PermissionRequest permissionRequest) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.permission_explanation);
+        builder.setMessage(R.string.storage_permission_explanation);
+        builder.setPositiveButton(R.string.ok_continue, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                permissionRequest.proceed();
+            }
+        });
+        builder.setNegativeButton(R.string.deny_for_now, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                permissionRequest.cancel();
+            }
+        });
+        builder.create().show();
+    }
+
+    @OnPermissionDenied({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void onPermissionDenied() {
         Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
     }

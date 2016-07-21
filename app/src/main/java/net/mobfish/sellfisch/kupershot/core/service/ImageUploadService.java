@@ -2,6 +2,7 @@ package net.mobfish.sellfisch.kupershot.core.service;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -47,6 +48,7 @@ public class ImageUploadService {
                         long nowMilis = DateTime.now().getMillis();
                         if (nowMilis > lastUpdateMoment + PROGRESS_TIMEOUT) {
                             lastUpdateMoment = nowMilis;
+                            Log.i("ImageUploadService", "Progress called");
                             bus.post(new OnUploadProgressEvent(null, true, false, uploaded, fileLength));
                         }
                         if (uploaded >= fileLength) {
@@ -65,10 +67,13 @@ public class ImageUploadService {
                     @Override
                     public void onCompleted(Exception e, String result) {
                         if (TextUtils.isEmpty(result) && e == null) {
+                            Log.i("ImageUploadService", "Calling completed");
                             bus.post(new OnUploadCompletedEvent(null, false, false));
                         } else if (e != null) {
+                            Log.i("ImageUploadService", e.getMessage());
                             bus.post(new OnUploadProgressEvent(new Exception(e.getMessage()), false, false, 100, 100));
                         } else if (!TextUtils.isEmpty(result)) {
+                            Log.i("ImageUploadService", context.getString(R.string.error_occurred));
                             bus.post(new OnUploadProgressEvent(new Exception(context.getString(R.string.error_occurred)), false, false, 100, 100));
                         }
                     }
