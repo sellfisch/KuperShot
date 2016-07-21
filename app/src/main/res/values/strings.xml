@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="error_occurred">Error occured</string>
     <string name="uploaded">uploaded</string>
-    <string name="uploading">uploading</string>
+    <string name="uploading">Uploading</string>
     <string name="permission_explanation">Permission explanation</string>
     <string name="capture_image_permission_explanation">We need to access your camera in order to capture image</string>
     <string name="storage_permission_explanation">We need to save captured image in order to upload it.</string>
