@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Click", Toast.LENGTH_SHORT).show();
                 MainActivityPermissionsDispatcher.captureImageWithCheck(MainActivity.this);
             }
         });
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void captureImage() {
-        Toast.makeText(MainActivity.this, "Capture", Toast.LENGTH_SHORT).show();
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takeVideoIntent, REQUEST_IMAGE_CAPTURE);

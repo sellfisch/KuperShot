@@ -70,10 +70,10 @@ public class ImageUploadService {
                             Log.i("ImageUploadService", "Calling completed");
                             bus.post(new OnUploadCompletedEvent(null, false, false));
                         } else if (e != null) {
-                            Log.i("ImageUploadService", e.getMessage());
+                            Log.i("ImageUploadService", "Exception " + e.getMessage());
                             bus.post(new OnUploadProgressEvent(new Exception(e.getMessage()), false, false, 100, 100));
                         } else if (!TextUtils.isEmpty(result)) {
-                            Log.i("ImageUploadService", context.getString(R.string.error_occurred));
+                            Log.i("ImageUploadService", "Unknown Exception " + context.getString(R.string.error_occurred) + ", RESULT: " + result);
                             bus.post(new OnUploadProgressEvent(new Exception(context.getString(R.string.error_occurred)), false, false, 100, 100));
                         }
                     }
