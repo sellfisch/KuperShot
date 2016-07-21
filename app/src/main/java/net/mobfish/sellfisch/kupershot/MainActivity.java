@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-               //         .setAction("Action", null).show();
 
                 // create Intent to take a picture and return control to the calling application
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -67,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                     if (file_extn.equals("img") || file_extn.equals("jpg") || file_extn.equals("jpeg") || file_extn.equals("gif") || file_extn.equals("png")) {
                        // HttpClient httpclient = new DefaultHttpClient();
                        // HttpPost httppost = new HttpPost("http://live.mob.fish/incomingUpload.php");
+
                     }
                     else{
                         //NOT IN REQUIRED FORMAT
