@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.path.android.jobqueue.JobManager;
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 MainActivityPermissionsDispatcher.captureImageWithCheck(MainActivity.this);
             }
         });
+
+        WebView webView=(WebView)findViewById(R.id.webView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl("http://live.mob.fish?view=mobil");
     }
 
     @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "compressing, file path -> " + compressedImage.getAbsolutePath());
             compressedImage.createNewFile();
             FileOutputStream compressedOutputStream = new FileOutputStream(compressedImage);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, compressedOutputStream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, compressedOutputStream);
             compressedOutputStream.flush();
             compressedOutputStream.close();
             return compressedImage.getAbsolutePath();
