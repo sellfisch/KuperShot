@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     public void captureImage() {
         try {
             File frazzleDirectory = new File(Environment.getExternalStorageDirectory() + ImageUtility.IMAGE_DIRECTORY);
-            if (frazzleDirectory.exists()) {
+            if (!frazzleDirectory.exists()) {
                 frazzleDirectory.mkdirs();
             }
 
