@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.path.android.jobqueue.JobManager;
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 MainActivityPermissionsDispatcher.captureImageWithCheck(MainActivity.this);
             }
         });
+
+        WebView webView=(WebView)findViewById(R.id.webView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl("http://live.mob.fish?view=mobil");
     }
 
     @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
