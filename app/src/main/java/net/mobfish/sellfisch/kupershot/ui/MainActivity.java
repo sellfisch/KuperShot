@@ -4,7 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -27,9 +27,9 @@ import net.mobfish.sellfisch.kupershot.R;
 import net.mobfish.sellfisch.kupershot.core.job.ImageUploadJob;
 import net.mobfish.sellfisch.kupershot.core.job.event.OnUploadCompletedEvent;
 import net.mobfish.sellfisch.kupershot.core.job.event.OnUploadProgressEvent;
+import net.mobfish.sellfisch.kupershot.util.ImageUtility;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 import javax.inject.Inject;
 
@@ -71,9 +71,25 @@ public class MainActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void captureImage() {
-        Intent takeVideoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takeVideoIntent, REQUEST_IMAGE_CAPTURE);
+        try {
+            File frazzleDirectory = new File(Environment.getExternalStorageDirectory() + ImageUtility.IMAGE_DIRECTORY);
+            if (frazzleDirectory.exists()) {
+                frazzleDirectory.mkdirs();
+            }
+
+            File originalImageCopy = new File(Environment.getExternalStorageDirectory() + ImageUtility.IMAGE_DIRECTORY + ImageUtility.IMAGE_NAME);
+            if (originalImageCopy.exists()) {
+                originalImageCopy.delete();
+            }
+            originalImageCopy.createNewFile();
+
+            Intent takeVideoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory() + ImageUtility.IMAGE_DIRECTORY + ImageUtility.IMAGE_NAME)));
+            if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takeVideoIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } catch (Exception ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -95,47 +111,30 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
-                    if (data.getExtras().get("data") != null) {
-                        loadImage(data.getExtras().get("data"));
-                    }
+                    loadImage();
                     break;
             }
         }
     }
 
-    private void loadImage(Object cameraImage) {
-
+    private void loadImage() {
         try {
-            Log.i(TAG, "loadImage: Object type -> " + cameraImage.getClass().getName());
-            imagePath = compressImage((Bitmap) cameraImage);
-            jobManager.addJob(new ImageUploadJob(imagePath));
+            Toast.makeText(this, "Preparing...", Toast.LENGTH_LONG).show();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imagePath = ImageUtility.compressImage();
+                            jobManager.addJob(new ImageUploadJob(imagePath));
+                        }
+                    });
+                }
+            }).start();
+
         } catch (Exception ex) {
             Log.i(TAG, "loadImage exception" + ex.getMessage());
-        }
-    }
-
-    public String compressImage(Bitmap bitmap) {
-        try {
-            Log.i(TAG, "compressing");
-            File frazzleDirectory = new File(Environment.getExternalStorageDirectory() + "/mobfish/kupershot/");
-            if (!frazzleDirectory.exists()) {
-                frazzleDirectory.mkdirs();
-            }
-            File compressedImage = new File(Environment.getExternalStorageDirectory() + "/mobfish/kupershot/kupershot_image.jpg");
-            if (compressedImage.exists()) {
-                compressedImage.delete();
-            }
-            Log.i(TAG, "compressing, file path -> " + compressedImage.getAbsolutePath());
-            compressedImage.createNewFile();
-            FileOutputStream compressedOutputStream = new FileOutputStream(compressedImage);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, compressedOutputStream);
-            compressedOutputStream.flush();
-            compressedOutputStream.close();
-            return compressedImage.getAbsolutePath();
-        } catch (Exception ex) {
-            Log.i(TAG, "compress exception" + ex.getMessage());
-            ex.printStackTrace();
-            return null;
         }
     }
 
